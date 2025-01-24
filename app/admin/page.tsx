@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
-import Navbar from "@/Components/navbar";
-import { Input } from "@/Components/ui/input";
-import { Button } from "@/Components/ui/button";
-import Footer from "@/Components/footer";
+import Navbar from "@/components/navbar";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Footer from "@/components/footer";
 import {
   Table,
   TableBody,
@@ -14,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/Components/ui/table";
+} from "@/components/ui/table";
 import {
   Pagination,
   PaginationContent,
@@ -23,9 +23,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/Components/ui/pagination";
+} from "@/components/ui/pagination";
 
-import StopListPopup from "@/Components/stoplistpop";
+import StopListPopup from "@/components/stoplistpop";
 
 // Define the type for check-in data
 interface CheckIn {

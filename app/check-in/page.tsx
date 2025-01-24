@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "../../Components/navbar";
+import Navbar from "../../components/navbar";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import Footer from "../../Components/footer";
+import Footer from "../../components/footer";
 import { createClient } from "@supabase/supabase-js";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../Components/ui/popover";
-import { Button } from "@/Components/ui/button";
+} from "../../components/ui/popover";
+import { Button } from "@/components/ui/button";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
