@@ -11,7 +11,7 @@ export default function HeroPage() {
         muted
         className="absolute top-0 left-0 w-full h-full object-cover -z-10"
       >
-        <source src="/Public/hero_vid.mp4" type="video/mp4" />
+        <source src="https://brdlzzxucjbcvetyfqpt.supabase.co/storage/v1/object/public/assets/hero.mp4?t=2025-01-24T17%3A24%3A59.837Z" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
