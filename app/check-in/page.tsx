@@ -57,9 +57,11 @@ export default function Home() {
       department: department,
       entity: entity,
       reason_for_visit: entity === "Visitor" ? visitorReason : null,
-      current_officer: "J.Doe",
+      current_officer: formData.get("officer") as string,
       escort_name: entity === "Visitor" ? contactPerson : null,
       temp_badge_num : entity === "Visitor" ? formData.get("escortbadge") as string : null ,
+      location: "Terminal A",
+
     };
 
     const { error } = await supabase.from("Check-In").insert([record]);
@@ -81,7 +83,7 @@ export default function Home() {
       <Navbar />
 
       <h1 className="scroll-m-20 md:text-4xl text-xl font-medium tracking-tight text-center">
-        Terminal B - Security Check Point
+        Terminal A - Security Check Point
       </h1>
 
       <div className="border w-11/12 max-w-3xl mx-auto mt-10 rounded-2xl">
@@ -159,6 +161,19 @@ export default function Home() {
                   className="absolute right-2 top-0 bottom-0 m-auto h-4 w-4 text-gray-500"
                 />
               </div>
+            </div>
+
+            <div className="flex flex-col items-start w-full max-w-sm">
+              <label htmlFor="officer" className="block font-medium mb-1">
+                Security Officer <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="officer"
+                placeholder="Eg: J. Doe"
+                className="border-2 border-gray-300 p-2 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
             </div>
 
             {selectedEntity === "Visitor" && (

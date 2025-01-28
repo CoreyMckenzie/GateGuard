@@ -37,6 +37,7 @@ interface CheckIn {
   reason_for_visit: string;
   current_officer: string;
   temp_badge_num: number;
+  location: string;
 
 }
 
@@ -68,7 +69,7 @@ export default function Page() {
       setLoading(true); // Set loading to true before fetching data
       const { data: checkInData, error: checkInError } = await supabase
         .from("Check-In")
-        .select("Name, department, entity, person_id, created_at, reason_for_visit, current_officer, temp_badge_num")
+        .select("Name, department, entity, person_id, created_at, reason_for_visit, current_officer, temp_badge_num, location")
         .order("created_at", { ascending: false }); // Newest to oldest
 
       if (checkInError) {
@@ -112,6 +113,22 @@ export default function Page() {
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
   const currentEntries = filteredCheckIns.slice(indexOfFirstEntry, indexOfLastEntry);
   const totalPages = Math.ceil(filteredCheckIns.length / entriesPerPage);
+
+  
+  const getLocationBadgeClass = (location: string) => {
+    if (location === "Terminal A") {
+      return "inline-block px-3 py-1 text-sm font-semibold text-red-800 bg-red-200 rounded-lg"; // Green badge for location "B"
+    } else if (location === "Terminal B") {
+      return "inline-block px-3 py-1 text-sm font-semibold text-green-800 bg-green-200 rounded-lg"; // Red badge for location "Terminal A"
+    }  else if (location === "Terminal C") {
+      return "inline-block px-3 py-1 text-sm font-semibold text-yellow-800 bg-yellow-200 rounded-lg"; // Red badge for location "Terminal A"
+    }  else if (location === "Golf 1") {
+      return "inline-block px-3 py-1 text-sm font-semibold text-blue-800 bg-blue-200 rounded-lg"; // Red badge for location "Terminal A"
+    }
+     else {
+      return "inline-block px-3 py-1 text-sm font-semibold text-gray-800 bg-gray-200 rounded-lg"; // Default badge for unknown locations
+    }
+  };
 
   return (
     <div>
@@ -165,6 +182,8 @@ export default function Page() {
                 <TableHead>Check-In Time</TableHead>
                 <TableHead>Reason For Visit</TableHead>
                 <TableHead>Officer Name</TableHead>
+                <TableHead>Location</TableHead>
+
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -186,6 +205,11 @@ export default function Page() {
                     </TableCell>
                     <TableCell>{checkIn.reason_for_visit}</TableCell>
                     <TableCell>{checkIn.current_officer}</TableCell>
+                    <TableCell>                      
+                      <span className={getLocationBadgeClass(checkIn.location)}>
+                        {checkIn.location }
+                      </span>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
