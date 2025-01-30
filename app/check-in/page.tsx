@@ -1,16 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/navbar";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Footer from "../../components/footer";
 import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+import { User } from "@supabase/supabase-js";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "../../components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
+
+
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,10 +23,55 @@ const supabase = createClient(
 );
 
 export default function Home() {
+
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+  
+
+  const [user, setUser] = useState<User | null>(null);
+    const [firstName, setFirstName] = useState<string | null>(null);
+  
   const [selectedEntity, setSelectedEntity] = useState("TAA");
   const [errorPopoverOpen, setErrorPopoverOpen] = useState(false);
   const [successPopoverOpen, setSuccessPopoverOpen] = useState(false);
+  const [loading, setLoading] = useState(true); // Loader for name
+  
   const [denyPopoverOpen, setDenyPopoverOpen] = useState(false);
+
+    useEffect(() => {
+      const getUser = async () => {
+        setLoading(true);
+        const { data, error } = await supabase.auth.getUser();
+        if (error) {
+          console.error("Error fetching user:", error);
+          redirect("/sign-in");
+        } else {
+          setUser(data?.user ?? null);
+          if (data?.user?.id) {
+            fetchUserProfile(data.user.id);
+          }
+        }
+        setLoading(false);
+      };
+  
+      const fetchUserProfile = async (userId: string) => {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("first_name")
+          .eq("id", userId)
+          .single();
+  
+        if (error) {
+          console.error("Error fetching profile:", error);
+        } else {
+          setFirstName(data?.first_name ?? "User");
+        }
+      };
+  
+      getUser();
+    }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,7 +107,7 @@ export default function Home() {
       department: department,
       entity: entity,
       reason_for_visit: entity === "Visitor" ? visitorReason : null,
-      current_officer: formData.get("officer") as string,
+      current_officer: firstName,
       escort_name: entity === "Visitor" ? contactPerson : null,
       temp_badge_num : entity === "Visitor" ? formData.get("escortbadge") as string : null ,
       location: "Terminal A",
@@ -163,18 +213,6 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col items-start w-full max-w-sm">
-              <label htmlFor="officer" className="block font-medium mb-1">
-                Security Officer <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="officer"
-                placeholder="Eg: J. Doe"
-                className="border-2 border-gray-300 p-2 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
 
             {selectedEntity === "Visitor" && (
               <div className="flex flex-col items-start w-full max-w-sm">
