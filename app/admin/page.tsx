@@ -6,6 +6,9 @@ import Navbar from "@/components/navbar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Footer from "@/components/footer";
+import DatePicker from "@/components/DateSearch"; // Import DatePicker component
+import StopListPopup from "@/components/stoplistpop"; // Import Stop List Popup
+
 import {
   Table,
   TableBody,
@@ -15,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import {
   Pagination,
   PaginationContent,
@@ -24,8 +28,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-
-import StopListPopup from "@/components/stoplistpop";
 
 // Define the type for check-in data
 interface CheckIn {
@@ -49,21 +51,21 @@ interface StopList {
 }
 
 export default function Page() {
-  const [checkIns, setCheckIns] = useState<CheckIn[]>([]); // All check-ins
-  const [filteredCheckIns, setFilteredCheckIns] = useState<CheckIn[]>([]); // Filtered check-ins
-  const [searchQuery, setSearchQuery] = useState(""); // Search query
-  const [stopList, setStopList] = useState<StopList[]>([]); // Stop list entries
-  const [loading, setLoading] = useState(true); // Loading state
-  const [showStopListPopup, setShowStopListPopup] = useState(false); // Stop List Popup visibility
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-  const entriesPerPage = 10; // Entries per page
+  const [checkIns, setCheckIns] = useState<CheckIn[]>([]);
+  const [filteredCheckIns, setFilteredCheckIns] = useState<CheckIn[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [showStopListPopup, setShowStopListPopup] = useState(false);
+  const [stopList, setStopList] = useState<StopList[]>([]);
+  const entriesPerPage = 10;
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 
-  // Fetch data from Supabase
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true); // Set loading to true before fetching data
@@ -95,26 +97,34 @@ export default function Page() {
     fetchData();
   }, []);
 
-  // Handle search functionality
+  // Handle search by name, entity, department, or date
   const handleSearch = () => {
     const lowerCaseQuery = searchQuery.toLowerCase();
-    const filtered = checkIns.filter(
-      (entry) =>
+    const filtered = checkIns.filter((entry) => {
+      const matchesSearch =
         entry.Name.toLowerCase().includes(lowerCaseQuery) ||
         entry.department.toLowerCase().includes(lowerCaseQuery) ||
-        entry.entity.toLowerCase().includes(lowerCaseQuery)
-    );
+        entry.entity.toLowerCase().includes(lowerCaseQuery);
+
+      const matchesDate =
+        !selectedDate || entry.created_at.startsWith(selectedDate);
+
+      return matchesSearch && matchesDate;
+    });
+
     setFilteredCheckIns(filtered);
-    setCurrentPage(1); // Reset to the first page after search
+    setCurrentPage(1);
   };
 
   // Pagination logic
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-  const currentEntries = filteredCheckIns.slice(indexOfFirstEntry, indexOfLastEntry);
+  const currentEntries = filteredCheckIns.slice(
+    indexOfFirstEntry,
+    indexOfLastEntry
+  );
   const totalPages = Math.ceil(filteredCheckIns.length / entriesPerPage);
 
-  
   const getLocationBadgeClass = (location: string) => {
     if (location === "Terminal A") {
       return "inline-block px-3 py-1 text-sm font-semibold text-red-800 bg-red-200 rounded-lg"; // Green badge for location "B"
@@ -135,11 +145,14 @@ export default function Page() {
       <header>
         <Navbar />
       </header>
+
       <section className="mt-0">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mx-2">
           <h1 className="mt-10 scroll-m-20 text-2xl underline font-semibold tracking-tight transition-colors first:mt-0">
             Recent Check-Ins
           </h1>
+
+          {/* Search Inputs */}
           <div className="flex gap-2 w-full md:w-auto">
             <Input
               type="text"
@@ -148,9 +161,19 @@ export default function Page() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <Button className="bg-green-600 text-white hover:bg-green-900 rounded-xl" onClick={handleSearch}>
+
+            {/* Date Picker */}
+            <DatePicker selectedDate={selectedDate} onChange={setSelectedDate} />
+
+            {/* Search Button */}
+            <Button
+              className="bg-green-600 text-white hover:bg-green-900 rounded-xl"
+              onClick={handleSearch}
+            >
               Search
             </Button>
+
+            {/* Stop List Button */}
             <Button
               className="bg-red-600 text-white hover:bg-red-700 rounded-xl"
               onClick={() => setShowStopListPopup(true)}
@@ -160,14 +183,13 @@ export default function Page() {
           </div>
         </div>
       </section>
+
       <main className="mt-6 px-4">
         {loading ? (
-          // Loading spinner
           <div className="flex justify-center items-center h-64">
             <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : (
-          // Table content
           <Table className="w-full border border-gray-300 rounded-lg">
             <TableCaption className="font-semibold text-xl">
               Recent visitor check-ins
@@ -183,26 +205,18 @@ export default function Page() {
                 <TableHead>Reason For Visit</TableHead>
                 <TableHead>Officer Name</TableHead>
                 <TableHead>Location</TableHead>
-
               </TableRow>
             </TableHeader>
             <TableBody>
               {currentEntries.length > 0 ? (
                 currentEntries.map((checkIn, index) => (
-                  <TableRow
-                    key={index}
-                    className={index % 2 === 0 ? "bg-blue-50" : "bg-white"}
-                  >
+                  <TableRow key={index} className={index % 2 === 0 ? "bg-blue-50" : "bg-white"}>
                     <TableCell className="font-medium">{checkIn.Name}</TableCell>
                     <TableCell>{checkIn.department}</TableCell>
                     <TableCell>{checkIn.entity}</TableCell>
                     <TableCell>{checkIn.person_id}</TableCell>
-                    <TableCell>
-                      {new Date(checkIn.created_at).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(checkIn.created_at).toLocaleTimeString()}
-                    </TableCell>
+                    <TableCell>{new Date(checkIn.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell>{new Date(checkIn.created_at).toLocaleTimeString()}</TableCell>
                     <TableCell>{checkIn.reason_for_visit}</TableCell>
                     <TableCell>{checkIn.current_officer}</TableCell>
                     <TableCell>                      
@@ -223,6 +237,7 @@ export default function Page() {
           </Table>
         )}
 
+        {/* Pagination */}
         <Pagination className="mt-4 flex justify-center">
           <PaginationContent>
             <PaginationItem>
@@ -254,17 +269,15 @@ export default function Page() {
           </PaginationContent>
         </Pagination>
       </main>
+
+      {/* Stop List Popup */}
       {showStopListPopup && (
-        <StopListPopup
-          stopList={stopList}
-          onClose={() => setShowStopListPopup(false)}
-        />
+        <StopListPopup onClose={() => setShowStopListPopup(false)} stopList={stopList} />
       )}
 
-      <footer className="mt-10" >
-        <Footer/>
+      <footer className="mt-10">
+        <Footer />
       </footer>
-
     </div>
   );
 }
