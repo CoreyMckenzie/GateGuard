@@ -4,6 +4,8 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { createBrowserClient } from "@supabase/ssr";
 import { User } from "@supabase/supabase-js";
+import { redirect } from "next/navigation";
+
 
 export default function Navbar() {
   const supabase = createBrowserClient(
@@ -22,6 +24,7 @@ export default function Navbar() {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
         console.error("Error fetching user:", error);
+        redirect("/sign-in");
       } else {
         setUser(data?.user ?? null);
         if (data?.user?.id) {
@@ -75,7 +78,7 @@ export default function Navbar() {
         {user ? (
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-sm md:text-base font-medium text-gray-700 hover:text-indigo-700 focus:outline-none transition relative"
+            className="scroll-m-20 text-2xl font-semibold tracking-tight"
           >
             {loading ? "Loading..." : `Welcome, ${firstName}`}
           </button>
