@@ -55,12 +55,13 @@ export default function Navbar() {
     await supabase.auth.signOut();
     setUser(null);
     setMenuOpen(false); // Close menu on sign out
+    redirect("/");
   };
 
   return (
     <nav className="flex justify-between items-center h-16 mt-2 bg-white text-black relative mb-10 p-4" role="navigation">
       {/* Logo */}
-      <a href="/" className="text-2xl md:text-2xl font-medium tracking-tight">
+      <a href="/" className="text-2xl md:text-2xl font-boldso tracking-tight">
         Gate<span className="text-indigo-700">Guard</span>
       </a>
 

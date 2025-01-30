@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/navbar";
+import Navbar from "../../../components/navbar";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
-import Footer from "../../components/footer";
+import Footer from "../../../components/footer";
 import { createClient } from "@supabase/supabase-js";
 import { createBrowserClient } from "@supabase/ssr";
 import { User } from "@supabase/supabase-js";
@@ -11,7 +11,7 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../components/ui/popover";
+} from "../../../components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 
@@ -109,7 +109,7 @@ export default function Home() {
       current_officer: firstName,
       escort_name: entity === "Visitor" ? contactPerson : null,
       temp_badge_num : entity === "Visitor" ? formData.get("escortbadge") as string : null ,
-      location: "Terminal A",
+      location: "Terminal C",
 
     };
 
@@ -132,7 +132,7 @@ export default function Home() {
       <Navbar />
 
       <h1 className="scroll-m-20 md:text-4xl text-xl font-medium tracking-tight text-center">
-        Terminal A - Security Check Point
+        Terminal C - Security Check Point
       </h1>
 
       <div className="border w-11/12 max-w-3xl mx-auto mt-10 rounded-2xl">
