@@ -254,13 +254,17 @@ export default function Page() {
           </PaginationContent>
         </Pagination>
       </main>
-      <Footer />
       {showStopListPopup && (
         <StopListPopup
           stopList={stopList}
           onClose={() => setShowStopListPopup(false)}
         />
       )}
+
+      <footer className="mt-10" >
+        <Footer/>
+      </footer>
+
     </div>
   );
 }
