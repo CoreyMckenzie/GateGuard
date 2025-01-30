@@ -60,7 +60,7 @@ export default function Navbar() {
   return (
     <nav className="flex justify-between items-center h-16 mt-2 bg-white text-black relative mb-10 p-4" role="navigation">
       {/* Logo */}
-      <a href="/" className="text-xl md:text-2xl font-medium tracking-tight">
+      <a href="/" className="text-2xl md:text-2xl font-medium tracking-tight">
         Gate<span className="text-indigo-700">Guard</span>
       </a>
 
@@ -78,7 +78,7 @@ export default function Navbar() {
         {user ? (
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="scroll-m-20 text-2xl font-semibold tracking-tight"
+            className="scroll-m-20 text-xl font-semibold tracking-tight"
           >
             {loading ? "Loading..." : `Welcome, ${firstName}`}
           </button>
