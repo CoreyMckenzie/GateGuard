@@ -32,6 +32,7 @@ export default function Home() {
 
   const [user, setUser] = useState<User | null>(null);
   const [firstName, setFirstName] = useState<string | null>(null);
+  const [lastName, setLastName] = useState<string | null>(null);
   const [selectedEntity, setSelectedEntity] = useState("TAA");
   const [errorPopoverOpen, setErrorPopoverOpen] = useState(false);
   const [successPopoverOpen, setSuccessPopoverOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function Home() {
       const fetchUserProfile = async (userId: string) => {
         const { data, error } = await supabase
           .from("profiles")
-          .select("first_name")
+          .select("*")
           .eq("id", userId)
           .single();
   
@@ -66,11 +67,14 @@ export default function Home() {
           console.error("Error fetching profile:", error);
         } else {
           setFirstName(data?.first_name ?? "User");
+          setLastName(data?.last_name ?? "User");
         }
       };
   
       getUser();
     }, []);
+
+    const fullName = firstName + " " + lastName;
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -106,7 +110,7 @@ export default function Home() {
       department: department,
       entity: entity,
       reason_for_visit: entity === "Visitor" ? visitorReason : null,
-      current_officer: firstName,
+      current_officer: fullName,
       escort_name: entity === "Visitor" ? contactPerson : null,
       temp_badge_num : entity === "Visitor" ? formData.get("escortbadge") as string : null ,
       location: "Golf",
@@ -132,7 +136,7 @@ export default function Home() {
       <Navbar />
 
       <h1 className="scroll-m-20 md:text-4xl text-xl font-medium tracking-tight text-center">
-        Golf 1 - Security Check Point
+        Golf - Security Check Point
       </h1>
 
       <div className="border w-11/12 max-w-3xl mx-auto mt-10 rounded-2xl">
